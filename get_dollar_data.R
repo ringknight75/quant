@@ -14,7 +14,7 @@ library(quantmod)
 # 1) 원달러 환율 
 #===========================================================================
 won_dolloar <- getSymbols(Symbols="USD/KRW", 
-                         src = "FRED", 
+                         src = "yahoo", 
                          from=  Sys.Date() - 180, 
                          to =  Sys.Date(), auto.assign = FALSE)
 plot(usdkrw_xts)
@@ -23,8 +23,8 @@ plot(usdkrw_xts)
 #===========================================================================
 # 2) 달러 지수 
 #===========================================================================
-dallor_idx <- getSymbols('DX',   
-                         src = 'FRED', 
+dallor_idx <- getSymbols('DXY',   
+                         src = 'yahoo', 
                          from = '2020-03-15', to = '2021-03-04', 
                          auto.assign = FALSE) 
 tail(dallor_idx)
