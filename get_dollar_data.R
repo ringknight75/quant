@@ -106,7 +106,7 @@ head(join_cal_1_dt)
 
 
 #===========================================================================
-# 6) 52주 평균 달러 갭 비율 계산하기 
+# 7) 52주 평균 달러 갭 비율 계산하기 
 #    현재의 달러지수 / 52주 평균 달러 갭 비율 * 100 
 #===========================================================================
 join_cal_2_dt <- join_cal_1_dt
@@ -121,23 +121,53 @@ join_cal_2_dt %>%
 
 for(i in 1:nrow(join_cal_2_dt)) {
   join_cal_2_dt[i,8] <- join_cal_1_dt %>% 
-    filter(dates <=  as.Date(unlist(join_cal_2_dt[i,1])),  dates >= as.Date(unlist(join_cal_2_dt[i,1]-365))) %>% 
+    filter(dates <=  as.Date(unlist(join_cal_2_dt[i,1])),  dates >= as.Date(unlist(join_cal_2_dt[i,1] - 365))) %>% 
     select(dollar_gap) %>% 
-    summarise(mean_52week_gap = mean(dollar_gap))
+    summarise(mean_52week_gap = mean(dollar_gap)) %>% unlist()
 }
 
 # as.Date(unlist(join_cal_2_dt[7,1]))
 # as.Date(unlist(join_cal_2_dt[7,1]-365))
-head(join_cal_2_dt, 50)
-tail(join_cal_2_dt)
+# head(join_cal_2_dt, 50)
+# tail(join_cal_2_dt)
 
-join_cal_2_dt %>% distinct(mean_52week_gap)
 
+#===========================================================================
+# 8) 차이 계산하기 
+#===========================================================================
+join_cal_3_dt <- join_cal_2_dt %>% mutate(before_dollar_idx = lead(dollar_idx, n=1),
+                         before_won_dolloar_price = lead(won_dolloar_price, n=1)) %>% 
+  mutate(diff_dollar_idx = dollar_idx - before_dollar_idx,
+         diff_won_dolloar_price = won_dolloar_price - before_won_dolloar_price) %>% 
+  select(dates, dollar_idx, diff_dollar_idx, won_dolloar_price, diff_won_dolloar_price, dollar_gap, mean_52week_gap)
 
 
 
 #===========================================================================
-# 7) 달러 최적 매수 타이밍 판단하기  
+# 8) 시각화 하기  
+#===========================================================================
+join_cal_3_dt %>% select(dates, dollar_idx, won_dolloar_price, mean_52week_gap) %>% 
+  gather(dollar_idx:mean_52week_gap, key = 'key', value = 'value') %>% 
+  filter(dates >= '2020-01-01') %>% 
+  ggplot(aes(x = dates, y = value)) +
+  geom_line() +
+  facet_wrap(~key)
+
+join_cal_3_dt %>% select(dates, dollar_idx, won_dolloar_price, mean_52week_gap) %>% 
+  mutate(adjust_won_dolloar_price = won_dolloar_price * 0.1,
+         adjust_mean_52week_gap = mean_52week_gap * 10) %>% 
+  select(dates, dollar_idx, adjust_won_dolloar_price, adjust_mean_52week_gap) %>% 
+  gather(dollar_idx:adjust_mean_52week_gap, key = 'key', value = 'value') %>% 
+  filter(dates >= '2021-01-01') %>% 
+  ggplot(aes(x = dates, y = value)) +
+  geom_line(aes(color = key)) +
+  scale_y_log10()
+
+
+join_cal_3_dt 
+
+#===========================================================================
+# 9) 달러 최적 매수 타이밍 판단하기  
 #===========================================================================
 #
 #    7-1) 원달러 환율 하락 (각각 또는 두가지 상황이 발생될 수 있음)
