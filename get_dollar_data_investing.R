@@ -99,11 +99,11 @@ join_cal_1_dt <- join_full_dt %>%
 #===========================================================================
 join_cal_2_dt <- join_cal_1_dt
 join_cal_2_dt$mean_52week_gap <- 0
-
+unlist(join_cal_2_dt[1,1])
 
 for(i in 1:nrow(join_cal_2_dt)) {
   join_cal_2_dt[i,7] <- join_cal_2_dt %>% 
-    filter(date <=  as.Date(unlist(join_cal_2_dt[i,1])),  date >= as.Date(unlist(join_cal_2_dt[i,1] - 365))) %>% 
+    filter(date <=  unlist(join_cal_2_dt[i,1]),  date >= unlist(join_cal_2_dt[i,1] - 365)) %>% 
     select(dollar_gap) %>% 
     summarise(mean_52week_gap = mean(dollar_gap)) %>% unlist()
 }
@@ -119,7 +119,7 @@ join_cal_2_dt$mean_price <- 0
 
 for(i in 1:nrow(join_cal_2_dt)) {
   join_cal_2_dt[i,8] <- join_cal_2_dt %>% 
-    filter(date <=  as.Date(unlist(join_cal_2_dt[i,1])),  date >= as.Date(unlist(join_cal_2_dt[i,1] - 365))) %>% 
+    filter(date <=  unlist(join_cal_2_dt[i,1]),  date >= unlist(join_cal_2_dt[i,1] - 365)) %>% 
     select(price) %>% 
     summarise(mean_price = mean(price)) %>% unlist()
 }
@@ -131,7 +131,7 @@ join_cal_2_dt$mean_index <- 0
 
 for(i in 1:nrow(join_cal_2_dt)) {
   join_cal_2_dt[i,9] <- join_cal_2_dt %>% 
-    filter(date <=  as.Date(unlist(join_cal_2_dt[i,1])),  date >= as.Date(unlist(join_cal_2_dt[i,1] - 365))) %>% 
+    filter(date <=  unlist(join_cal_2_dt[i,1]),  date >= unlist(join_cal_2_dt[i,1] - 365)) %>% 
     select(index) %>% 
     summarise(mean_index = mean(index)) %>% unlist()
 }
@@ -187,7 +187,9 @@ join_cal_2_dt$cnd_3 <- ifelse(join_cal_2_dt$dollar_gap  >  join_cal_2_dt$mean_52
 #조건 4) 현재 환율이 적정 활율 보다 낮을 때 
 join_cal_2_dt$cnd_4 <- ifelse(join_cal_2_dt$price < join_cal_2_dt$index / join_cal_2_dt$mean_52week_gap *100, TRUE, FALSE)
 
-head(join_cal_2_dt)
+join_cal_2_dt %>% select(date, index, price, mean_index, mean_price, 
+                         dollar_gap, mean_52week_gap, adjust_price, cnd_1, cnd_2, cnd_3, cnd_4) %>% 
+  head()
 
 
 
