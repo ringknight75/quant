@@ -142,7 +142,7 @@ for(i in 1:nrow(join_cal_2_dt)) {
 # 9) adjusted price
 #===========================================================================
 join_cal_2_dt <- join_cal_2_dt %>% 
-  mutate(adjust_price = price / mean_52week_gap * 100)
+  mutate(adjust_price = index / mean_52week_gap * 100)
 
 
 
