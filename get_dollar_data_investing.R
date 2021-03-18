@@ -36,7 +36,7 @@ head(won_dolloar_2_dt)
 #             > 과거데이터 > 2020년 1월 1일 부터 ~ 
 #    - data 폴더에 위치 시킴 
 #===========================================================================
-dallor_idx_dt <- read_csv("data/미국 달러 지수 선물 내역.csv") %>% 
+dallor_idx_dt <- read_csv("data/달러 지수 내역.csv") %>% 
   rename(dates = 날짜, index = 종가, var_index = `변동 %`) %>% 
   select(dates, index, var_index) %>% 
   mutate(year = substring(dates,1,4), month = substring(dates, 7, 8), day = substring(dates, 11, 12),

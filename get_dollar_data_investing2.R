@@ -32,11 +32,11 @@ head(won_dolloar_2_dt)
 
 #===========================================================================
 # 2) 인베스팅 닷컴에서 "미국 달러 지수" 엑셀 다운로드하기 
-#    - 위치 : https://kr.investing.com/currencies/us-dollar-index-historical-data
+#    - 위치 : https://kr.investing.com/indices/usdollar-historical-data
 #             > 과거데이터 > 2020년 1월 1일 부터 ~ 
 #    - data 폴더에 위치 시킴 
 #===========================================================================
-dallor_idx_dt <- read_csv("data/미국 달러 지수 선물 내역.csv") %>% 
+dallor_idx_dt <- read_csv("data/달러 지수 내역.csv") %>% 
   rename(dates = 날짜, index = 종가, var_index = `변동 %`) %>% 
   select(dates, index, var_index) %>% 
   mutate(year = substring(dates,1,4), month = substring(dates, 7, 8), day = substring(dates, 11, 12),
@@ -189,7 +189,7 @@ join_cal_2_dt$cnd_4 <- ifelse(join_cal_2_dt$price < join_cal_2_dt$index / join_c
 
 join_cal_2_dt %>% select(date, index, price, mean_index, mean_price, 
                          dollar_gap, mean_52week_gap, adjust_price, cnd_1, cnd_2, cnd_3, cnd_4) %>% 
-  head()
+  head(20)
 
 
 
