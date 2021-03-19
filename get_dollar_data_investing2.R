@@ -11,6 +11,7 @@ library(lubridate)
 
 
 getwd()
+rm(list = ls())
 
 #===========================================================================
 # 1) 인베스팅 닷컴에서 "USD/KRW - 미국 달러 원" 엑셀 다운로드하기 
@@ -28,8 +29,8 @@ won_dolloar_dt <- read_csv("data/USD_KRW 내역.csv") %>%
 won_dolloar_2_dt <- won_dolloar_dt %>% 
   select(date, price, var_dollar)
 
-head(won_dolloar_2_dt) 
-
+# head(won_dolloar_2_dt) 
+# nrow(won_dolloar_2_dt)
 #===========================================================================
 # 2) 인베스팅 닷컴에서 "미국 달러 지수" 엑셀 다운로드하기 
 #    - 위치 : https://kr.investing.com/indices/usdollar-historical-data
@@ -47,8 +48,8 @@ dallor_idx_2_dt <- dallor_idx_dt %>%
   select(date, index, var_index)
 
 
-head(dallor_idx_2_dt)
-
+# head(dallor_idx_2_dt)
+# nrow(dallor_idx_2_dt)
 
 #===========================================================================
 # 3) dataframe JOIN (full join)
@@ -146,7 +147,6 @@ join_cal_2_dt <- join_cal_2_dt %>%
 
 
 
-
 #===========================================================================
 # 7) 달러 최적 매수 타이밍 판단하기  
 #===========================================================================
@@ -187,10 +187,8 @@ join_cal_2_dt$cnd_3 <- ifelse(join_cal_2_dt$dollar_gap  >  join_cal_2_dt$mean_52
 #조건 4) 현재 환율이 적정 활율 보다 낮을 때 
 join_cal_2_dt$cnd_4 <- ifelse(join_cal_2_dt$price < join_cal_2_dt$index / join_cal_2_dt$mean_52week_gap *100, TRUE, FALSE)
 
-join_cal_2_dt %>% select(date, index, price, mean_index, mean_price, 
-                         dollar_gap, mean_52week_gap, adjust_price, cnd_1, cnd_2, cnd_3, cnd_4) %>% 
-  head(20)
+result_df <- join_cal_2_dt %>% select(date, index, price, mean_index, mean_price, 
+                         dollar_gap, mean_52week_gap, adjust_price, cnd_1, cnd_2, cnd_3, cnd_4) 
 
-
-
+view(result_df)
 
