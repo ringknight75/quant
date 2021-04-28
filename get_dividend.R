@@ -8,6 +8,7 @@
 library(quantmod)
 library(tidyverse)
 library(lubridate)
+library(stats)
 
 (to_day   <- Sys.Date() - 1)
 (from_day <- Sys.Date() - 367)
@@ -66,7 +67,8 @@ disp_div_year_history <- function(symbol){
   div_year_tb %>%
     ggplot(aes(x = year, y = sum_div_mony)) +
     geom_bar(stat = "identity") +
-    stat_smooth(method = "loess", se = FALSE)    
+    # stat_smooth(method = "loess", se = FALSE)  
+    stat_smooth(method = "lm", se = FALSE)  
 }
 
 
@@ -86,10 +88,10 @@ disp_div_history("T")
 disp_div_year_history("T")
 
 disp_div_history("MO")
-disp_div_year_history("T")
+disp_div_year_history("MO")
 
 disp_div_history("QYLD")
-disp_div_year_history("T")
+disp_div_year_history("QYLD")
 
 disp_div_history("XOM")
 disp_div_year_history("XOM")
@@ -125,11 +127,12 @@ div_o_tb <- div_o_tb %>% mutate(year = year(div_date)) %>%
 glimpse(div_o_tb)
 
 ?loess
-lo <- loess(sum_div_mony ~ year,data = div_o_tb)
+lo <- loess(sum_div_mony ~ year, div_o_tb)
 summary(lo)
-next_year <- seq(from = 2021, to = 2040)
-predict(lo, next_year, se = TRUE)
 
+next_year <- data.frame(year = seq(from = 2021, to = 2040, by = 1))
+next_year <- seq(from = 1984, to = 2040, by = 1)
+predict(lo, next_year)
 
 
 
