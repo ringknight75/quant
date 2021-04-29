@@ -8,13 +8,13 @@
 library(quantmod)
 library(tidyverse)
 library(lubridate)
-
+(to_day   <- Sys.Date() - 1)
 (from_day <- Sys.Date() - 367)
 #===========================================================================
 # 1) 분석 할 대상 지정 
 #===========================================================================
 # T, MO, XOM, SPHD, SDIV, KO, ABBV, MMM, OHI
-target_stock <- "KO"
+target_stock <- "XOM"
 
 
 #===========================================================================
@@ -87,6 +87,14 @@ target_stock_range2_df <- target_stock_range_df %>%
   
 
 
+lo <- loess(stock_mony ~ as.double(stock_date) , data = target_stock_1year_df)
+# summary(lo)
+lo_result <- predict(lo, as.double(target_stock_1year_df$stock_date))
+# length(lo_result)           #253
+# nrow(target_stock_1year_df) #253
+
+target_stock2_1year_df <- bind_cols(target_stock_1year_df, predict_price = lo_result) %>% 
+  mutate(gap_price = stock_mony - predict_price, gap_tag = gap_price>0)
 
 
 
@@ -139,4 +147,7 @@ ggplot(target_stock_1year_df, aes(x = stock_date, y = stock_mony)) +
   stat_smooth(method = "loess", se = FALSE)  #span = 0.75
 
 
+
+ggplot(target_stock2_1year_df, aes(x = stock_date, gap_price)) +
+  geom_bar(stat = "identity", aes(color = gap_tag))
 
