@@ -14,7 +14,7 @@ library(lubridate)
 # 1) 분석 할 대상 지정 
 #===========================================================================
 # T, MO, XOM, SPHD, SDIV, KO, ABBV, MMM, OHI
-target_stock <- "OHI"
+target_stock <- "KO"
 
 
 #===========================================================================
@@ -136,7 +136,7 @@ ggplot(target_stock_1year_df, aes(x = stock_date, y = stock_mony)) +
   geom_hline(aes(yintercept = unlist(target_stock_range2_df[,7])),  color = "blue", linetype = 3) +
   annotate(geom = "text", x = from_day + 30, y = unlist(target_stock_range2_df[,7])+0.4, 
            label = paste0("   (50%) ",unlist(unlist(target_stock_range2_df[,7]))), color = "blue") +  
-  stat_smooth(method = "loess", se = FALSE)
+  stat_smooth(method = "loess", se = FALSE)  #span = 0.75
 
 
 
