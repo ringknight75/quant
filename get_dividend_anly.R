@@ -17,7 +17,7 @@ library(lubridate)
 
 # 4월 29일 기준 매도 가능 종목 : MO, XOM, MMM, PG(조금더 떨어지면 가능)
 
-target_stock <- "PG"
+target_stock <- "T"
 
 
 #===========================================================================
@@ -102,16 +102,16 @@ target_stock2_1year_df <- bind_cols(target_stock_1year_df, predict_price = lo_re
 
 
 
-
 #===========================================================================
 # 4) Plot 그리기 
 #===========================================================================
 # 배당 지급 기준 
-div_tb %>% filter(div_mony < 20) %>% 
+div_tb %>% 
+  filter(div_mony < 20) %>% 
   ggplot(aes(x = div_date, y = div_mony)) +
   geom_line() +
   stat_smooth(method = "loess", se = FALSE) +
-  labs(x = "date", y = "dividend($)")
+  labs(x = "date", y = "dividend($)", title = paste0(target_stock, " Chart")) 
 
 
 div_year_tb %>%
@@ -119,7 +119,7 @@ div_year_tb %>%
   geom_bar(stat = "identity") +
   stat_smooth(method = "loess", se = FALSE) + 
   #stat_smooth(method = "lm", se = FALSE)  
-  labs(x = "date", y = "total dividend($) per year")
+  labs(x = "date", y = "total dividend($) per year", title = paste0(target_stock, " Chart")) 
 
 chart_Series(Ad(target_stock_all_price))
 
@@ -147,10 +147,11 @@ ggplot(target_stock_1year_df, aes(x = stock_date, y = stock_mony)) +
   geom_hline(aes(yintercept = unlist(target_stock_range2_df[,7])),  color = "blue", linetype = 3) +
   annotate(geom = "text", x = from_day + 30, y = unlist(target_stock_range2_df[,7])+0.4, 
            label = paste0("   (50%) ",unlist(unlist(target_stock_range2_df[,7]))), color = "blue") +  
-  stat_smooth(method = "loess", se = FALSE)  #span = 0.75
-
+  stat_smooth(method = "loess", se = FALSE) +  #span = 0.75
+  labs(title = paste0(target_stock, " Chart")) 
 
 
 ggplot(target_stock2_1year_df, aes(x = stock_date, gap_price)) +
-  geom_bar(stat = "identity", aes(color = gap_tag))
+  geom_bar(stat = "identity", aes(color = gap_tag)) +
+  labs(title = paste0(target_stock, " Chart")) 
 
