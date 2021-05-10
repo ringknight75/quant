@@ -13,11 +13,14 @@ library(lubridate)
 #===========================================================================
 # 1) 분석 할 대상 지정 
 #===========================================================================
-# 배당주 대상 : T, MO, XOM, SPHD, SDIV, KO, ABBV, MMM, OHI, PG, QYLD
+# 배당주 대상 : T, MO, XOM, SPHD, SDIV, KO, ABBV, MMM, OHI, PG, QYLD, JNJ
 
 # 4월 29일 기준 매도 가능 종목 : MO, XOM, MMM, PG(조금더 떨어지면 가능)
 
-target_stock <- "T"
+target_stock <- "ABBV"
+
+
+
 
 
 #===========================================================================
@@ -111,7 +114,7 @@ div_tb %>%
   ggplot(aes(x = div_date, y = div_mony)) +
   geom_line() +
   stat_smooth(method = "loess", se = FALSE) +
-  labs(x = "date", y = "dividend($)", title = paste0(target_stock, " Chart")) 
+  labs(x = "date", y = "dividend($)", title = paste0(target_stock, " [Chart Dividend]")) 
 
 
 div_year_tb %>%
@@ -119,11 +122,11 @@ div_year_tb %>%
   geom_bar(stat = "identity") +
   stat_smooth(method = "loess", se = FALSE) + 
   #stat_smooth(method = "lm", se = FALSE)  
-  labs(x = "date", y = "total dividend($) per year", title = paste0(target_stock, " Chart")) 
+  labs(x = "date", y = "total dividend($) per year", title = paste0(target_stock, " [Chart Dividend by year]")) 
 
 chart_Series(Ad(target_stock_all_price))
 
-ggplot(target_stock_1year_df, aes(x = stock_date, y = stock_mony)) +
+ggplot(target_stock_1year_df, aes(x = stock_date,  y = stock_mony)) +
   geom_line() +
   geom_hline(aes(yintercept = unlist(target_stock_range_df[1,2])), color = "red", linetype = 3) +
   annotate(geom = "text", x = as_date(unlist(target_stock_range_df[1,1])), y = unlist(target_stock_range_df[1,2])-0.3, 
@@ -148,10 +151,10 @@ ggplot(target_stock_1year_df, aes(x = stock_date, y = stock_mony)) +
   annotate(geom = "text", x = from_day + 30, y = unlist(target_stock_range2_df[,7])+0.4, 
            label = paste0("   (50%) ",unlist(unlist(target_stock_range2_df[,7]))), color = "blue") +  
   stat_smooth(method = "loess", se = FALSE) +  #span = 0.75
-  labs(title = paste0(target_stock, " Chart")) 
+  labs(title = paste0(target_stock, " [While 2 year Chart]")) 
 
 
 ggplot(target_stock2_1year_df, aes(x = stock_date, gap_price)) +
   geom_bar(stat = "identity", aes(color = gap_tag)) +
-  labs(title = paste0(target_stock, " Chart")) 
+  labs(title = paste0(target_stock, " [Stock Bubble Indoex Chart]")) 
 
