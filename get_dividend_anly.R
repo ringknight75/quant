@@ -17,7 +17,7 @@ library(lubridate)
 
 # 5월 10일 기준 매도 가능 종목 : MO
 
-target_stock <- "JNJ"
+target_stock <- "O"
 
 
 
