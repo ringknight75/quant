@@ -10,15 +10,16 @@ library(tidyverse)
 library(lubridate)
 (to_day   <- Sys.Date() - 1)
 (from_day <- Sys.Date() - 367)
+(from_5_day <- Sys.Date() - 365*5)
 #===========================================================================
 # 1) 분석 할 대상 지정 
 #===========================================================================
-# 배당주 대상 : T, MO, XOM, SPHD, SDIV, DIV, KO, ABBV, MMM, OHI, PG, QYLD, JNJ
+# 배당주 대상 : T, MO, XOM, SPHD, SDIV, DIV, KO, ABBV, MMM, ABBV, PG, JNJ, KMB, AAPL
 
 # 5월 10일 기준 매도 가능 종목 : MO
 
 target_stock <- "TSLA"
-
+price_avg <- 132.61
 
 
 #===========================================================================
@@ -69,8 +70,45 @@ div_year_tb <- div_tb %>%
 # 3) 주식 동향 
 #===========================================================================
 
+# 현재일 기준 1년간 최고가와 최저가 구하기 (Drawdowns)
+# https://www.r-bloggers.com/2020/02/drawdowns-by-the-data/
+
+
 target_stock_1year_df <- target_stock_df %>% 
-  filter(stock_date > from_day)
+  filter(stock_date > from_day) %>% 
+  mutate(before_365 = stock_date - 365)
+
+target_stock_5year_df <- target_stock_df %>% 
+  filter(stock_date > from_5_day) %>% 
+  mutate(before_365 = stock_date - 365 * 5)
+
+
+cal_drawdown <- function(all_df, stock_1year_df){
+ atemp <- data.frame(matrix(ncol=4, nrow = nrow(stock_1year_df)))
+  
+  for(i in(1:nrow(stock_1year_df))) {
+    temps <- all_df %>% filter(stock_date <= stock_1year_df[i,1], stock_date >= stock_1year_df[i,3] ) %>% 
+      summarise(stock_max = max(stock_mony), stock_min = min(stock_mony))
+    
+    atemp[i, 1] <- stock_1year_df[i,1]
+    atemp[i, 2] <- stock_1year_df[i,2]
+    atemp[i, 3] <- temps$stock_max
+    atemp[i, 4] <- temps$stock_min
+
+  }
+  return(atemp)
+}
+
+
+tt <- cal_drawdown(target_stock_df, target_stock_5year_df)
+names(tt) <- c("stock_date", "stock_mony", "stock_max", "stock_min")
+tt$stock_date <- as_date(tt$stock_date)
+
+tt <- tt %>% mutate(stock_gap = stock_max -stock_min, stock_low_gap = stock_mony - stock_min,
+              stock_gap_ratio = stock_low_gap /stock_gap )
+
+
+
 
 
 target_stock_range_df  <- target_stock_1year_df %>% 
@@ -99,12 +137,6 @@ lo_result <- predict(lo, as.double(target_stock_1year_df$stock_date))
 
 target_stock2_1year_df <- bind_cols(target_stock_1year_df, predict_price = lo_result) %>% 
   mutate(gap_price = stock_mony - predict_price, gap_tag = gap_price>0)
-
-
-
-
-
-
 
 
 
@@ -153,8 +185,19 @@ ggplot(target_stock_1year_df, aes(x = stock_date,  y = stock_mony)) +
   geom_hline(aes(yintercept = unlist(target_stock_range2_df[,7])),  color = "blue", linetype = 3) +
   annotate(geom = "text", x = from_day + 30, y = unlist(target_stock_range2_df[,7])+0.4, 
            label = paste0("   (50%) ",unlist(unlist(target_stock_range2_df[,7]))), color = "blue") +  
+  
+  geom_hline(aes(yintercept = price_avg),  color = "red", linetype = 1) +
+  annotate(geom = "text", x = from_day + 150, y = price_avg + 0.8, 
+           label = paste0("   (avg) ", price_avg), color = "red") +  
+
   stat_smooth(method = "loess", se = FALSE) +  #span = 0.75
   labs(title = paste0(target_stock, " [for 1 year Chart]")) 
+
+
+ggplot(tt, aes(x = stock_date,  y = stock_gap_ratio)) +
+  geom_line()
+  
+
 
 
 ggplot(target_stock2_1year_df, aes(x = stock_date, gap_price)) +
