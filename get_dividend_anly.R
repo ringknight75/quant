@@ -18,7 +18,7 @@ library(lubridate)
 
 # 5월 10일 기준 매도 가능 종목 : MO
 
-target_stock <- "TSLA"
+target_stock <- "AAPL"
 price_avg <- 132.61
 
 
@@ -195,7 +195,8 @@ ggplot(target_stock_1year_df, aes(x = stock_date,  y = stock_mony)) +
 
 
 ggplot(tt, aes(x = stock_date,  y = stock_gap_ratio)) +
-  geom_line()
+  geom_line() +
+  labs(title = paste0(target_stock, " [drawdown % peak for 5 year]")) 
   
 
 
